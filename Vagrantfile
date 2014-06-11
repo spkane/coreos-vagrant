@@ -73,6 +73,11 @@ Vagrant.configure("2") do |config|
         config.vm.network "forwarded_port", guest: 4243, host: ($expose_docker_tcp + i - 1), auto_correct: true
       end
 
+      config.vm.provider :vmware_fusion do |vb|
+        vb.functional_hgfs = false
+        vb.gui = $vb_gui
+      end
+
       config.vm.provider :virtualbox do |vb|
         vb.gui = $vb_gui
         vb.memory = $vb_memory
@@ -84,6 +89,9 @@ Vagrant.configure("2") do |config|
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
       #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+
+      # Uncomment below to enable rsync for sharing the host machine into the coreos-vagrant VM.
+      #config.vm.synced_folder ".", "/home/core/share", id: "core", type: "rsync", rsync__exclude: ".git/"
 
       if File.exist?(CLOUD_CONFIG_PATH)
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
